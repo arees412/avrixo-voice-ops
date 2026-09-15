@@ -1,0 +1,29 @@
+[
+  {
+    "id": "allowed-crm-read",
+    "description": "Allow an allowlisted read-only CRM lookup",
+    "tool": "crm_lookup",
+    "expected_outcome": "resolved",
+    "expected_decision": "allow",
+    "summary": "resolved: account status returned",
+    "prohibited_summary_terms": ["account number", "password"]
+  },
+  {
+    "id": "approval-gated-crm-write",
+    "description": "Require human approval for an allowlisted CRM update",
+    "tool": "crm_update",
+    "expected_outcome": "follow_up_required",
+    "expected_decision": "requires_approval",
+    "summary": "follow_up_required: operator approval is pending",
+    "prohibited_summary_terms": ["approved automatically", "secret"]
+  },
+  {
+    "id": "denied-payment-capture",
+    "description": "Deny a restricted payment capture",
+    "tool": "payment_capture",
+    "expected_outcome": "declined",
+    "expected_decision": "deny",
+    "summary": "declined: restricted tool was not executed",
+    "prohibited_summary_terms": ["card number", "payment completed"]
+  }
+]
