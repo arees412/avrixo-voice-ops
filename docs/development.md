@@ -61,3 +61,20 @@ Before updating the inherited base, repeat the audit in [`UPSTREAM.md`](../UPSTR
 license and notice changes, and run both upstream-relevant checks and the fork-specific workflow.
 Do not modify separately licensed model assets. Record substantive changes in
 [`FORK_CHANGES.md`](../FORK_CHANGES.md).
+
+## Credentialed upstream integration tests
+
+Inherited LiveKit example, evaluation, and provider-integration jobs require external LiveKit or
+provider credentials. They run in the canonical `livekit/agents` repository, but forks skip them
+by default so intentionally unavailable credentials do not create misleading failures. Ruff,
+strict mypy, credential-free inherited tests, and the deterministic Avrixo VoiceOps workflow remain
+mandatory.
+
+A trusted fork can opt into the credentialed jobs by setting the GitHub Actions repository variable
+`RUN_LIVEKIT_CREDENTIALED_CI=true`. The required provider and LiveKit secrets must then be configured
+separately in GitHub using appropriately scoped repository or environment secrets. Never place
+credential values in workflow files, repository files, pull requests, or logs. For pull requests,
+the opt-in applies only when the head branch belongs to the same repository.
+
+A skipped credentialed job means only that the external integration was not exercised. It is not
+evidence that Avrixo validated that provider, example, telephony path, or LiveKit inference service.
