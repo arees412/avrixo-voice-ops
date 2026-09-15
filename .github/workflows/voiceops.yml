@@ -1,0 +1,66 @@
+name: Avrixo VoiceOps
+
+on:
+  push:
+    branches: [main, feat/avrixo-voice-ops]
+    paths:
+      - "avrixo-voice-ops/**"
+      - "docs/**"
+      - "README.md"
+      - "UPSTREAM.md"
+      - "FORK_CHANGES.md"
+      - ".github/workflows/voiceops.yml"
+  pull_request:
+    paths:
+      - "avrixo-voice-ops/**"
+      - "docs/**"
+      - "README.md"
+      - "UPSTREAM.md"
+      - "FORK_CHANGES.md"
+      - ".github/workflows/voiceops.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: avrixo-voice-ops
+
+jobs:
+  deterministic-validation:
+    name: Python ${{ matrix.python-version }} offline-safe gate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: avrixo-voice-ops/uv.lock
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install locked development environment
+        run: uv sync --locked --extra dev
+      - name: Format
+        run: uv run ruff format --check src tests scripts
+      - name: Lint
+        run: uv run ruff check src tests scripts
+      - name: Type check
+        run: uv run mypy src/avrixo_voice_ops tests
+      - name: Unit and deterministic E2E tests
+        run: uv run pytest
+      - name: Governance evaluations
+        run: uv run python scripts/run_evaluations.py
+      - name: Package import
+        run: uv run python -c "import avrixo_voice_ops"
+      - name: Documentation and Mermaid links
+        run: uv run python scripts/check_docs.py
+      - name: Offline secret-pattern scan
+        run: uv run python scripts/secret_scan.py
