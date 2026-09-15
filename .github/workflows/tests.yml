@@ -67,8 +67,15 @@ jobs:
         run: make unit-tests
 
   evaluation:
-    # don't run tests for PRs on forks
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    # Credentialed inherited evaluations are opt-in outside the canonical repository.
+    # Fork opt-in PRs are limited to same-repository branches so secrets are not exposed
+    # to untrusted pull requests.
+    if: >-
+      (github.repository == 'livekit/agents' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)) ||
+      (vars.RUN_LIVEKIT_CREDENTIALED_CI == 'true' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -93,8 +100,15 @@ jobs:
         run: uv run pytest --evals
 
   tests:
-    # don't run tests for PRs on forks
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    # Credentialed provider integrations are opt-in outside the canonical repository.
+    # Fork opt-in PRs are limited to same-repository branches so secrets are not exposed
+    # to untrusted pull requests.
+    if: >-
+      (github.repository == 'livekit/agents' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)) ||
+      (vars.RUN_LIVEKIT_CREDENTIALED_CI == 'true' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository))
     strategy:
       fail-fast: false
       matrix:

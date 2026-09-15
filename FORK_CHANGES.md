@@ -23,6 +23,13 @@ This file identifies work authored for Avrixo VoiceOps after the inherited LiveK
 - `README.md`: replaced the upstream-first landing page with a visible derivative-work notice,
   Avrixo scope, governance flow, safety boundaries, and explicit inherited-functionality section.
 
+## Maintenance adaptations
+
+- `.github/workflows/evals.yml` and `.github/workflows/tests.yml`: inherited credential-dependent
+  examples, evaluations, and provider integrations skip by default in forks and remain available
+  through the documented `RUN_LIVEKIT_CREDENTIALED_CI=true` opt-in. Offline-safe inherited and
+  deterministic Avrixo checks remain mandatory; skipped integrations are not claimed as validated.
+
 ## Not modified
 
 - Inherited LiveKit framework and plugin implementation.
